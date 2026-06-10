@@ -40,7 +40,6 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
           platforms: linux/amd64
 
-      # ================== DEPLOY TO EC2 ==================
       - name: Deploy to EC2
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@v1.0.3
@@ -51,11 +50,10 @@ jobs:
           script: |
             echo "🚀 Deployment boshlandi..."
 
-            # Loyiha papkasiga o'tish
             cd /home/ubuntu
 
-            # docker-compose.yml faylini GitHubdan EC2 ga yuborish
-            cat > docker-compose.yml << 'EOL'
+            # docker-compose.yml ni yaratish
+            cat > docker-compose.yml << EOF
 version: '3.9'
 
 services:
@@ -70,9 +68,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-EOL
+EOF
 
-            # Deploy
+            # Deploy qilish
             docker compose down || true
             docker compose pull
             docker compose up -d
