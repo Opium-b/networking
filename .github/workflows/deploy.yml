@@ -1,24 +1,23 @@
-name: CI/CD - Deploy to AWS EC2
+name: Deploy to EC2
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -32,50 +31,40 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
-          platforms: linux/amd64
 
-      - name: Deploy to EC2
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "🚀 Deployment boshlandi..."
-
             cd /home/ubuntu
 
-            # docker-compose.yml ni yaratish
-            cat > docker-compose.yml << EOF
-version: '3.9'
+            printf '%s\n' \
+              'services:' \
+              '  networking-app:' \
+              '    image: ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest' \
+              '    container_name: networking-app' \
+              '    restart: unless-stopped' \
+              '    ports:' \
+              '      - "80:80"' \
+              '    logging:' \
+              '      driver: json-file' \
+              '      options:' \
+              '        max-size: "10m"' \
+              '        max-file: "3"' \
+              > docker-compose.yml
 
-services:
-  networking-app:
-    image: ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
-    container_name: networking-app
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-EOF
-
-            # Deploy qilish
             docker compose down || true
             docker compose pull
             docker compose up -d
 
-            echo "✅ Deployment muvaffaqiyatli yakunlandi! $(date)"
-            echo "============================================"
             docker compose ps
             docker compose logs --tail=30 networking-app
