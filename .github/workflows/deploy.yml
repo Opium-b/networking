@@ -45,26 +45,16 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu
+            docker pull ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
 
-            printf '%s\n' \
-              'services:' \
-              '  networking-app:' \
-              '    image: ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest' \
-              '    container_name: networking-app' \
-              '    restart: unless-stopped' \
-              '    ports:' \
-              '      - "80:80"' \
-              '    logging:' \
-              '      driver: json-file' \
-              '      options:' \
-              '        max-size: "10m"' \
-              '        max-file: "3"' \
-              > docker-compose.yml
+            docker stop networking-app  true
+            docker rm networking-app  true
 
-            docker-compose down || true
-            docker-compose pull
-            docker-compose up -d
+            docker run -d \
+              --name networking-app \
+              --restart unless-stopped \
+              -p 80:80 \
+              ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
 
-            docker-compose ps
-            docker-compose logs --tail=30 networking-app
+            docker ps
+            docker logs --tail=30 networking-app
