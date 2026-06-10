@@ -1,4 +1,4 @@
-name: CI/CD - Deploy to AWS EC2 with Docker Compose
+name: CI/CD - Deploy to AWS EC2
 
 on:
   push:
@@ -26,49 +26,45 @@ jobs:
       - name: Build React App
         run: npm run build
 
+      # Docker Hub ga login
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Docker image ni build va push qilish
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/networking-assignment-app:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
           platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
-      - name: Deploy to EC2 with Docker Compose
+      # EC2 ga deploy qilish
+      - name: Deploy to EC2
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Loyiha papkasiga o'tish (agar kerak bo'lsa)
-            cd /home/ubuntu || true
-            
+            echo "🚀 Deployment boshlandi..."
+
+            cd /home/ubuntu
+
             # docker-compose.yml mavjudligini tekshirish
             if [ ! -f docker-compose.yml ]; then
               echo "❌ docker-compose.yml topilmadi!"
               exit 1
             fi
-            
-            # Eski containerlarni to'xtatish
+
             docker compose down || true
-            
-            # Yangi imageni pull qilish
             docker compose pull
-            
-            # Yangi versiyani ishga tushirish
             docker compose up -d
-            
-            echo "✅ Deployment completed successfully at $(date)"
-            echo "============================================"
+
+            echo "✅ Deployment muvaffaqiyatli yakunlandi!"
             docker compose ps
             docker compose logs --tail=20 networking-app
