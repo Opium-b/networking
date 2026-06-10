@@ -45,16 +45,16 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
 
-            docker stop networking-app  true
-            docker rm networking-app  true
+            sudo docker stop networking-app  true
+            sudo docker rm networking-app  true
 
-            docker run -d \
+            sudo docker run -d \
               --name networking-app \
               --restart unless-stopped \
               -p 80:80 \
               ${{ secrets.DOCKER_USERNAME }}/networking-assignment-app:latest
 
-            docker ps
-            docker logs --tail=30 networking-app
+            sudo docker ps
+            sudo docker logs --tail=30 networking-app
