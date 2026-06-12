@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  networking-app:
+    image: opiuym/networking-assignment-app:latest
+    container_name: networking-app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    # Agar kerak bo'lsa environment variables qo'shish mumkin
+    # environment:
+    #   - NODE_ENV=production
+    #   - VITE_BASE44_APP_BASE_URL=...
+
+    # Loglarni saqlash uchun
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Healthcheck (ixtiyoriy, lekin tavsiya qilinadi)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

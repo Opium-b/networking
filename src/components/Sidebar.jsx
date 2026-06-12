@@ -20,7 +20,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 min-h-screen bg-primary text-primary-foreground flex flex-col">
       <div className="p-5 border-b border-white/10">
-        <h1 className="font-heading text-lg font-bold tracking-tight">CloudNet Demo</h1>
+        <h1 className="font-heading text-lg font-bold tracking-tight">Retake</h1>
         <p className="text-xs text-primary-foreground/60 mt-0.5">Wholesale ERP Migration</p>
       </div>
       <nav className="flex-1 p-3 space-y-1">

@@ -38,7 +38,7 @@ export default function Dashboard() {
       <FadeSlide delay={0} mounted={mounted}>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-heading font-bold">Cloud Networking Demo</h1>
+            <h1 className="text-xl font-heading font-bold">Clothing demo</h1>
             <p className="text-sm text-muted-foreground">Wholesale ERP migration — AWS infrastructure overview</p>
           </div>
           <LiveClock />
@@ -60,8 +60,12 @@ export default function Dashboard() {
       {/* Info cards */}
       <div className="grid md:grid-cols-2 gap-4">
         <FadeSlide delay={500} mounted={mounted}>
-          <Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md h-full">
-            <CardContent className="p-5">
+          <
+// @ts-ignore
+          Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md h-full">
+            <
+// @ts-ignore
+            CardContent className="p-5">
               <h3 className="font-heading font-semibold mb-3">Business Scenario</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 A wholesale clothing company currently runs its ERP (product catalog), CRM (customer management), and WMS (warehouse inventory) on a local on-premises network. The goal is to migrate these systems to AWS cloud infrastructure to improve scalability, reliability, and remote access.
@@ -71,8 +75,12 @@ export default function Dashboard() {
         </FadeSlide>
 
         <FadeSlide delay={580} mounted={mounted}>
-          <Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md h-full">
-            <CardContent className="p-5">
+          <
+// @ts-ignore
+          Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md h-full">
+            <
+// @ts-ignore
+            CardContent className="p-5">
               <h3 className="font-heading font-semibold mb-3">Migration Approach</h3>
               <ul className="text-sm text-muted-foreground space-y-2">
                 {[
@@ -101,6 +109,7 @@ export default function Dashboard() {
   );
 }
 
+// @ts-ignore
 function FadeSlide({ children, delay = 0, mounted }) {
   return (
     <div
